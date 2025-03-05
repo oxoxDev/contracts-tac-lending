@@ -12,7 +12,7 @@ import {OutMessage, TokenAmount, TacHeaderV1} from "tac-l2-ccl/contracts/L2/Stru
 // Pool Imports
 import {IPool} from "../interfaces/IPool.sol";
 import {IPoolProxy} from "../interfaces/IPoolProxy.sol";
-import {TransferHelper} from "../helpers/TransferHelper.sol";
+import {TransferHelper} from "../lib/TransferHelper.sol";
 
 // SmartAccount Imports
 import {IZLSmartAccount} from "../interfaces/IZLSmartAccount.sol";
@@ -58,16 +58,6 @@ contract PoolProxy is AppProxy, OwnableUpgradeable, IPoolProxy {
         SupplyArguments memory args = abi.decode(arguments, (SupplyArguments));
         TacHeaderV1 memory header = _decodeTacHeader(tacHeader);
         _supply(args, header);
-
-        // CCL TAC->TON callback not needed because no tokens to bridge in supply
-        OutMessage memory message = OutMessage({
-            queryId: header.queryId,
-            tvmTarget: header.tvmCaller,
-            tvmPayload: "",
-            toBridge: new TokenAmount[](0)
-        });
-
-        sendMessage(message, 0);
     }
 
     /**
@@ -151,16 +141,6 @@ contract PoolProxy is AppProxy, OwnableUpgradeable, IPoolProxy {
         RepayArguments memory args = abi.decode(arguments, (RepayArguments));
         TacHeaderV1 memory header = _decodeTacHeader(tacHeader);
         _repay(args, header);
-
-        // CCL TAC->TON callback not needed because no tokens to bridge in repay
-        OutMessage memory message = OutMessage({
-            queryId: header.queryId,
-            tvmTarget: header.tvmCaller,
-            tvmPayload: "",
-            toBridge: new TokenAmount[](0)
-        });
-
-        sendMessage(message, 0);
     }
 
     /**

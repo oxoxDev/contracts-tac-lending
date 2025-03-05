@@ -3,13 +3,11 @@ import hre, { ethers } from "hardhat";
 import { deploy, TacLocalTestSdk, JettonInfo, TokenMintInfo, TokenUnlockInfo } from "tac-l2-ccl";
 import { Signer, keccak256} from "ethers";
 import { expect } from "chai";
-import { PoolProxy } from "../typechain-types/contracts/proxy/PoolProxy";
-import { MockPool } from "../typechain-types/contracts/MockPool";
-import { TestToken} from "../typechain-types";
-import { ERC20 } from "../typechain-types/@openzeppelin/contracts/token/ERC20";
-import { token } from "../typechain-types/@openzeppelin/contracts";
-import { ZLSmartAccount } from "../typechain-types/contracts/smart-accounts/ZLSmartAccount";
-import { to } from "cli-color/move";
+import { PoolProxy } from "../typechain/contracts/proxy/PoolProxy";
+import { MockPool } from "../typechain/contracts/MockPool";
+import { TestToken} from "../typechain";
+import { ERC20 } from "../typechain/@openzeppelin/contracts/token/ERC20";
+import { ZLSmartAccount } from "../typechain/contracts/smart-accounts/ZLSmartAccount";
 
 describe("Pool proxy test", () => {
 
@@ -79,7 +77,7 @@ describe("Pool proxy test", () => {
         const extraData = "0x";
 
         // define timestamp, when message was created on TVM
-        const timestamp = BigInt(Math.floor(Date.now() / 1000));
+        const timestamp = BigInt(Math.floor(Date.now() / 1000)) + BigInt(1);
 
         // define tvm wallet address who sent message
         const tvmWalletCaller = "TVMCallerAddress";
@@ -90,8 +88,6 @@ describe("Pool proxy test", () => {
             name: "TON",
             symbol: "TON",
             decimals: 9n,
-            description: "TON description",
-            image: "https://ton.com/image.png",
         };
 
         // how much jetton to mint
@@ -132,19 +128,7 @@ describe("Pool proxy test", () => {
         expect(deployedTokens[0].tvmAddress).to.be.eq("NONE");
 
         // check out messages
-        expect(outMessages.length).to.be.eq(1);
-        const outMessage = outMessages[0];
-        expect(outMessage.queryId).to.be.eq(queryId);
-        expect(outMessage.operationId).to.be.eq(operationId);
-        expect(outMessage.callerAddress).to.be.eq(await proxyContract.getAddress());
-        expect(outMessage.targetAddress).to.be.eq(tvmWalletCaller);
-        expect(outMessage.payload).to.be.eq("");
-
-        // check burned token
-        expect(outMessage.tokensBurned.length).to.be.eq(0);
-
-        // check locked token
-        expect(outMessage.tokensLocked.length).to.be.eq(0);
+        expect(outMessages.length).to.be.eq(0);
 
         // check crossChainLayer and tresaurySwap balance 
         expect(await wTONContract.balanceOf(crossChainLayerAddress)).to.be.eq(0n);
@@ -173,8 +157,6 @@ describe("Pool proxy test", () => {
             name: "TON1",
             symbol: "TON1",
             decimals: 9n,
-            description: "TON1 description",
-            image: "https://ton.com/image.png",
         };
 
         // how much jetton to mint
@@ -215,19 +197,7 @@ describe("Pool proxy test", () => {
         expect(deployedTokens[0].tvmAddress).to.be.eq("NONE1");
 
         // check out messages
-        expect(outMessages.length).to.be.eq(1);
-        const outMessage = outMessages[0];
-        expect(outMessage.queryId).to.be.eq(queryId);
-        expect(outMessage.operationId).to.be.eq(operationId);
-        expect(outMessage.callerAddress).to.be.eq(await proxyContract.getAddress());
-        expect(outMessage.targetAddress).to.be.eq(tvmWalletCaller);
-        expect(outMessage.payload).to.be.eq("");
-
-        // check burned token
-        expect(outMessage.tokensBurned.length).to.be.eq(0);
-
-        // check locked token
-        expect(outMessage.tokensLocked.length).to.be.eq(0);
+        expect(outMessages.length).to.be.eq(0);
 
         // check crossChainLayer and tresaurySwap balance 
         expect(await wTONContract1.balanceOf(crossChainLayerAddress)).to.be.eq(0n);
@@ -380,8 +350,6 @@ describe("Pool proxy test", () => {
             name: "TON",
             symbol: "TON",
             decimals: 9n,
-            description: "TON description",
-            image: "https://ton.com/image.png",
         };
 
         // how much jetton to mint
@@ -420,4 +388,3 @@ describe("Pool proxy test", () => {
         expect(await poolContract.userBorrows(target, wTON)).to.be.eq(0n);
     });
 });
-
