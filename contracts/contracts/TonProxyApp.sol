@@ -24,7 +24,7 @@ contract TonProxyApp is TacProxyV1, OwnableUpgradeable, ITonProxyApp {
     event InvokeWithCallback(
         uint64 queryId,
         uint256 timestamp,
-        string operationId,
+        bytes32 operationId,
         string tvmCaller,
         bytes extraData,
         TokenAmount[] receivedTokens
