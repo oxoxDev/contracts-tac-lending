@@ -2,19 +2,19 @@
   "SmartAccountBluePrint": {
     "contract": "ZLSmartAccount",
     "verified": false,
-    "address": "0x641Be7e4ACBd3882F00D319053e20C7bd4a3e643",
+    "address": "0xe2c85fEEC01d3942d3c19402027E8cb1A62fEBF3",
     "args": []
   },
   "TonProxyAppImpl": {
     "contract": "TonProxyApp",
     "verified": false,
-    "address": "0xf818746D6C7C101357d47dc6228c9f801FA0Ae5a",
+    "address": "0x5601e98519f8259Af9D24894Df0E8a393f4C4522",
     "args": []
   },
   "TonProxyApp-Proxy": {
     "contract": "InitializableAdminUpgradeabilityProxy",
     "verified": false,
-    "address": "0x350c54A5720ae52356839cb5beC42d486C22b09D",
+    "address": "0xede83aF1d3727C0408638667BED0A05Ab490E67c",
     "args": []
   }
 }
