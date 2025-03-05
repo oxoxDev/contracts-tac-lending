@@ -1,69 +1,72 @@
-import * as dotenv from "dotenv";
-
-import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-toolbox";
 import "@openzeppelin/hardhat-upgrades";
-import { HardhatUserConfig } from "hardhat/config";
-dotenv.config();
+import "hardhat-dependency-compiler";
+import "hardhat-deploy";
 
-const TAC_TESTNET_URL = process.env.TAC_TESTNET_URL || "https://turin.rpc.tac.build/";
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+import "dotenv/config";
 
-const config: HardhatUserConfig = {
+export default {
   solidity: {
     compilers: [
       {
-        version: "0.8.25",
+        version: "0.8.10",
         settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200
-          }
-        }
+          optimizer: { enabled: true, runs: 100_000 },
+          evmVersion: "berlin",
+        },
       },
       {
-        version: "0.8.18",
+        version: "0.8.12",
+        settings: {
+          optimizer: { enabled: true, runs: 100_000 },
+          evmVersion: "berlin",
+        },
+      },
+      {
+        version: "0.8.28",
+        settings: {
+          optimizer: { enabled: true, runs: 100_000 },
+        },
       },
     ],
   },
   networks: {
-    hardhat: {
-      chainId: 1337,
-      accounts: {
-        count: 50
+      hardhat: {
+        chainId: 1337,
+        default: true,
+        allowBlocksWithSameTimestamp: true,
       },
-      allowBlocksWithSameTimestamp: true
-    },
-    localhost: {
-	    url:  "http://127.0.0.1:8545",
-    },
-    tac_testnet: {
-      url: TAC_TESTNET_URL,
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    tac_turin: {
+      url: "https://newyork-inap-72-251-230-233.ankr.com/tac_tacd_testnet_full_rpc_1",
       chainId: 2390,
+      accounts: [process.env.PRIVATE_KEY || ""],
+      saveDeployments: true,
+    },
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
     },
   },
   etherscan: {
-    apiKey: {
-      tacTurin: 'empty',
-    },
     customChains: [
       {
-        network: "tacTurin",
+        network: "tac_turin",
         chainId: 2390,
         urls: {
-          apiURL: "https://turin.explorer.tac.build/api",
-          browserURL: "https://turin.explorer.tac.build"
-        }
-      }
-    ]
+            apiURL: "",
+            browserURL: "https://explorer.tac-turin.ankr.com/",
+        },
+      },
+    ],
   },
-  gasReporter: {
-    enabled: false,
-    currency: 'ETH',
-    gasPrice: 1
-  }
+  dependencyCompiler: {
+    paths: [
+      "@zerolendxyz/core-v3/contracts/dependencies/openzeppelin/upgradeability/InitializableAdminUpgradeabilityProxy.sol",
+    ],
+  },
+  typechain: {
+    outDir: "typechain",
+    target: "ethers-v6",
+  },
 };
-
-export default config;
-

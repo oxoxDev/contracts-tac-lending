@@ -1,17 +1,14 @@
 {
-  "name": "tac-faucet-contracts",
+  "name": "contracts",
   "version": "1.0.0",
-  "description": "ERC20 tokens that can be publicly minted wrapping some ETH according to a specific rate",
+  "main": "index.js",
   "scripts": {
-    "clean": "rm -rf artifacts/ cache/ .vscode/ typechain/",
-    "compile": "npx hardhat compile",
-    "deploy_testnet": "npx hardhat run scripts/deploy.ts --network tac_testnet",
-    "deploy_local": "npx hardhat run scripts/deploy.ts",
-    "test": "npx hardhat test"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "hardhat compile && hardhat typechain"
   },
-  "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.7",
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
@@ -34,14 +31,13 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.13.2",
     "hardhat": "^2.22.5",
+    "hardhat-dependency-compiler": "^1.2.1",
+    "hardhat-deploy": "^0.14.0",
     "hardhat-gas-reporter": "^1.0.10",
     "jest": "^29.7.0",
+    "tac-l2-ccl": "0.9.2",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
     "typescript": "^5.6.3"
-  },
-  "devDependencies": {
-    "solidity-coverage": "^0.8.1",
-    "tac-l2-ccl": "0.8.32"
   }
 }
