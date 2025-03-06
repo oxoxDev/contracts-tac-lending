@@ -1,6 +1,6 @@
 import { DeployFunction } from "hardhat-deploy/dist/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { InitializableAdminUpgradeabilityProxy, TonProxyApp } from "../typechain";
+import { InitializableAdminUpgradeabilityProxy, PoolProxy } from "../typechain";
 import { save } from "../scripts/utils";
 const func: DeployFunction = async function ({
     getNamedAccounts,
@@ -13,7 +13,7 @@ const func: DeployFunction = async function ({
   console.log("Deployer Address:", deployer);
 
   // Deployment parameters
-  const crossChainLayerAddress = "0xf101319630F67cEaa4612930FbDd2Ee26F6E8288";
+  const settingsAddress = "0x0928d67A277891832c743F8179bf2035D0025392";
   const zerolendPoolAddress = "0x4dFa558A5bDDA4A4396B41c1EC1B02e330137CAf";
 
   // Deploy the ZLSmartAccount blueprint
@@ -33,26 +33,26 @@ const func: DeployFunction = async function ({
   );
 
   // Deploy the TonProxyApp implementation
-  console.log("Deploying TonProxyApp implementation...");
-  const tonProxyAppArtifact = await deploy("TonProxyAppImpl", {
+  console.log("Deploying PoolProxy implementation...");
+  const poolProxyArtifact = await deploy("PoolProxyImpl", {
     from: deployer,
-    contract: "TonProxyApp",
-    args: [crossChainLayerAddress],
+    contract: "PoolProxy",
+    args: [settingsAddress, zerolendPoolAddress],
     log: true,
   });
-  console.log("TonProxyApp Impl artifact deployed")
+  console.log("PoolProxy Impl artifact deployed")
 
   save(
     hre.network.name,
-    "TonProxyAppImpl",
-    "TonProxyApp",
-    tonProxyAppArtifact.address
+    "PoolProxyImpl",
+    "PoolProxyApp",
+    poolProxyArtifact.address
   )
 
   // Deploy the proxy contract
   console.log("Deploying Proxy...");
 
-  const proxyArtifact = await deploy("TonProxyApp-Proxy", {
+  const proxyArtifact = await deploy("PoolProxy-Proxy", {
     from: deployer,
     contract: "InitializableAdminUpgradeabilityProxy",
     log: true,
@@ -61,40 +61,38 @@ const func: DeployFunction = async function ({
 
   save(
     hre.network.name,
-    "TonProxyApp-Proxy",
+    "PoolProxy-Proxy",
     "InitializableAdminUpgradeabilityProxy",
     proxyArtifact.address
   )
 
   // Initialize the proxy with the TonProxyApp implementation and initializer data
-  const tonProxyAppImpl = (await hre.ethers.getContractAt(
-      tonProxyAppArtifact.abi,
-      tonProxyAppArtifact.address
-  )) as any as TonProxyApp;
+  const PoolProxyImpl = (await hre.ethers.getContractAt(
+      poolProxyArtifact.abi,
+      poolProxyArtifact.address
+  )) as any as PoolProxy;
 
   const proxy = (await hre.ethers.getContractAt(
     proxyArtifact.abi,
     proxyArtifact.address
   )) as any as InitializableAdminUpgradeabilityProxy;
 
-  const tx = await tonProxyAppImpl.initialize(
+  const tx = await PoolProxyImpl.initialize(
     bluePrint.address,
-    zerolendPoolAddress,
    { gasLimit: 1000000 }
   );
 
   await tx.wait();
   console.log("ProxyImpl initialized with TonProxyApp and ZLSmartAccount blueprint, at tx: ", tx.hash);
 
-  const initializePayload = tonProxyAppImpl.interface.encodeFunctionData(
+  const initializePayload = PoolProxyImpl.interface.encodeFunctionData(
     "initialize",
     [
         bluePrint.address,
-        zerolendPoolAddress,
     ]
 );
   const proxyInitTx = await proxy["initialize(address,address,bytes)"](
-    tonProxyAppArtifact.address,
+    poolProxyArtifact.address,
     deployer,
     initializePayload
   );
